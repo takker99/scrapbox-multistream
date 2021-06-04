@@ -2,7 +2,7 @@ import { parse } from "https://esm.sh/@progfay/scrapbox-parser@7.1.0";
 import {
   getUnixTime,
   lightFormat,
-} from "https://deno.land/x/date_fns@v2.22.1/index.js";
+} from "https://deno.land/x/date_fns@v2.15.0/index.js";
 import { ProjectResponse } from "./types.ts";
 
 const toLc = (title: string) =>
