@@ -1,12 +1,10 @@
-import { parse } from "https://esm.sh/@progfay/scrapbox-parser@7.1.0";
 import {
   getUnixTime,
   lightFormat,
 } from "https://deno.land/x/date_fns@v2.15.0/index.js";
-import type { ProjectResponse } from "./types.ts";
+import type { Line, ProjectResponse } from "./types.ts";
+import { jsxslack } from "https://esm.sh/jsx-slack";
 
-const toLc = (title: string) =>
-  title.toLowerCase().replaceAll(" ", "_").replaceAll("/", "%2F");
 
 async function getModifiedPages(
   project: string,
@@ -27,4 +25,41 @@ async function getModifiedPages(
       ? [{ project, title, updated: new Date(updated) }]
       : []
   );
+}
+
+function getModifiedLines(lines: Line[], from: Date) {
+  const result = [];
+  let chunk = [];
+
+  // 更新された行を、連続した部分ごとに分割する
+  for (const line of lines) {
+    if (line.updated > getUnixTime(from)) {
+      chunk.push(line);
+      continue;
+    }
+    if (chunk.length === 0) continue;
+    result.push(chunk);
+    chunk = [];
+    continue;
+  }
+  if (chunk.length > 0) result.push(chunk);
+  return result;
+}
+
+function convertLinesToBlocks(
+  project: string,
+  title: string,
+  lineBlocks: Line[][],
+) {
+  return jsxslack`
+    <Blocks>
+      <Section>
+        <b>
+          <a href="https://scrapbox.io/${project}/${title}#${lineBlocks[0][0].id}">
+            ${title}
+          </a>
+        </b>
+      </Section>
+      <Divider />
+    </Blocks>`;
 }
