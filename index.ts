@@ -3,7 +3,7 @@ import {
   getUnixTime,
   lightFormat,
 } from "https://deno.land/x/date_fns@v2.15.0/index.js";
-import { ProjectResponse } from "./types.ts";
+import type { ProjectResponse } from "./types.ts";
 
 const toLc = (title: string) =>
   title.toLowerCase().replaceAll(" ", "_").replaceAll("/", "%2F");
@@ -21,7 +21,7 @@ async function getModifiedPages(
     `https://scrapbox.io/api/pages/${project}?limit=1000`,
   );
   const { pages } = (await res.json()) as ProjectResponse;
-  return pages.map(({ title, updated }) =>
+  return pages.flatMap(({ title, updated }) =>
     updated > getUnixTime(from)
       ? [{ project, title, updated: new Date(updated) }]
       : []

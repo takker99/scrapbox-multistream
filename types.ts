@@ -1,4 +1,4 @@
-interface ProjectResponse {
+export interface ProjectResponse {
   projectName: string; // data取得先のproject名
   skip: number; // parameterに渡したskipと同じ
   limit: number; // parameterに渡したlimitと同じ
