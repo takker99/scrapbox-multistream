@@ -21,6 +21,7 @@ async function getModifiedPages(
     `https://scrapbox.io/api/pages/${project}?limit=1000`,
   );
   const { pages } = (await res.json()) as ProjectResponse;
+  console.log(`[/${project}]Finish searching`);
   return pages.flatMap(({ title, updated }) =>
     updated > getUnixTime(from)
       ? [{ project, title, updated: new Date(updated) }]
