@@ -1,4 +1,4 @@
-import { sb2blocks } from "../parse.ts";
+import { sb2blocks } from "../src/parse.ts";
 import { assertEquals } from "https://deno.land/std@0.95.0/testing/asserts.ts";
 
 Deno.test("codeblock", () => {
