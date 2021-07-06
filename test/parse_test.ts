@@ -1,4 +1,4 @@
-import { sb2blocks } from "../src/parse.ts";
+import { sb2blocks } from "../src/parse.tsx";
 import { assertEquals } from "https://deno.land/std@0.95.0/testing/asserts.ts";
 
 Deno.test("codeblock", () => {
@@ -61,4 +61,39 @@ Deno.test("tableblock", () => {
       verbatim: true,
     },
   }]);
+});
+
+Deno.test("line", () => {
+  const result = sb2blocks("project", "title", [{
+    text: "hello, world!",
+    id: "xxxx",
+    userId: "yyyy",
+    updated: 0,
+    created: 0,
+  }, {
+    text: " hello, [* Scrapbox]!",
+    id: "zzzz",
+    userId: "yyyy",
+    updated: 0,
+    created: 0,
+  }]);
+
+  console.log(result);
+});
+Deno.test("single image", () => {
+  const result = sb2blocks("project", "title", [{
+    text: "hello, world!",
+    id: "xxxx",
+    userId: "yyyy",
+    updated: 0,
+    created: 0,
+  }, {
+    text: " [https://gyazo.com/503a911fea542532aa5aba0a88eb7b60]",
+    id: "zzzz",
+    userId: "yyyy",
+    updated: 0,
+    created: 0,
+  }]);
+
+  console.log(result);
 });
