@@ -1,12 +1,17 @@
 import {
   CodeBlock as CodeBlockNode,
+  DecorationNode,
+  IconNode,
   Node as NodeType,
   parse,
+  StrongIconNode,
   Table,
 } from "https://cdn.skypack.dev/@progfay/scrapbox-parser@7.1.0?dts";
 import type { Line } from "./types.ts";
 import { Context, Image, JSXSlack, Section } from "https://esm.sh/jsx-slack";
 import { toLc } from "./utils.ts";
+
+JSXSlack.exactMode(true);
 
 export function sb2blocks(project: string, title: string, lines: Line[]) {
   const blocks = parse(lines.map((line) => line.text).join("\n"), {
@@ -28,7 +33,7 @@ export function sb2blocks(project: string, title: string, lines: Line[]) {
         // 画像記法は別立てにする
         if (
           renderedNodes.length === 1 &&
-          renderedNodes[0].$$jsxslack.props?.alt==="image"
+          renderedNodes[0].$$jsxslack.props?.alt === "image"
         ) {
           return renderedNodes[0];
         }
@@ -104,7 +109,61 @@ function Node(
     case "image":
     case "strongImage":
       return <Image src={node.src} alt="image" />;
+    case "icon":
+    case "strongIcon":
+      return <Icon project={project} {...node} />;
+    case "decoration":
+      return <Decoration project={project} title={title} {...node} />;
+    case "code":
+      return <code>{node.text}</code>;
+    case "commandLine":
+      return <code>{node.symbol} {node.text}</code>;
+    case "helpfeel":
+      return <code>? {node.text}</code>;
+    case "formula":
+      return <code>{node.formula}</code>;
+    case "googleMap":
+      return <a href={node.url}>{node.place}</a>;
+    case "hashTag":
+      return <a href={`https://scrapbox.io/${project}/${node.href}`}>
+        #{node.href}
+      </a>;
+    case "plain":
+    case "blank":
+      return <>{node.text}</>;
     default:
       return <>{node.raw}</>;
   }
 }
+
+type IconProps = (IconNode | StrongIconNode) & {
+  project: string;
+};
+
+const Icon = ({ pathType, path, project }: IconProps) => {
+  if (pathType === "relative") {
+    return <img src={`/${project}/${toLc(path)}`} alt={path} />;
+  } else {
+    const root = path.split("/")[1];
+    const iconName = path.slice(`/${root}/`.length);
+    return <img src={`/${root}/${toLc(iconName)}`} alt={iconName} />;
+  }
+};
+
+type DecorationProps = DecorationNode & {
+  project: string;
+  title: string;
+};
+
+const Decoration = ({ decos, nodes, project, title }: DecorationProps) => {
+  const hasStrong = decos.some((deco) => deco[0].startsWith("*-"));
+  const hasItalic = decos.includes("/");
+  const hasStrike = decos.includes("-");
+  let renderedNodes = <>
+    {nodes.map((node) => <Node node={node} project={project} title={title} />)}
+  </>;
+  if (hasStrong) renderedNodes = <b>{renderedNodes}</b>;
+  if (hasItalic) renderedNodes = <i>{renderedNodes}</i>;
+  if (hasStrike) renderedNodes = <s>{renderedNodes}</s>;
+  return renderedNodes;
+};
