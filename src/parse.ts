@@ -88,6 +88,15 @@ export function getModifiedBlocks(
           ...block,
         }];
     }
-  }).filter((line) => line.updated >= after);
-  return { project, title: page.title, lines: parsedLines };
+  });
+
+  // 隣接する行ごとに分ける
+  const chunks = parsedLines.reduce((acc, cur, i) => {
+    if (cur.updated < after) return acc;
+    if (i === 0 || parsedLines[i - 1].updated < after) return [...acc, [cur]];
+    acc.at(-1)!.push(cur);
+    return acc;
+  }, [] as ParsedLine[][]);
+
+  return { project, title: page.title, chunks };
 }
