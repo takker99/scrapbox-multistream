@@ -100,3 +100,4 @@ export function getModifiedBlocks(
 
   return { project, title: page.title, chunks };
 }
+export type ModifiedBlocks = ReturnType<typeof getModifiedBlocks>;
