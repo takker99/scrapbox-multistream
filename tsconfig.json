@@ -1,7 +1,0 @@
-{
-  "compilerOptions": {
-    "jsx": "react",
-    "jsxFactory": "JSXSlack.h",
-    "jsxFragmentFactory": "JSXSlack.Fragment"
-  }
-}
